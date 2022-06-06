@@ -82,22 +82,41 @@ float cellularNoise(float2 uv, float s)
     float minDist = 1.;
 
     for(int y=-1;y<=1;y++)
+    for(int x=-1;x<=1;x++)
     {
-        for(int x=-1;x<=1;x++)
-        {
-            float2 neighbor=float2(float(x), float(y));
-            float2 p=1.-.5*f2rand2HalfOne(i+neighbor);
-            float2 diff=neighbor+p-f;
-            float dist=length(diff);
-            minDist=min(minDist,dist);
-        }
+        float2 neighbor=float2(float(x), float(y));
+        float2 p=1.-.5*f2rand2HalfOne(i+neighbor);
+        float2 diff=neighbor+p-f;
+        float dist=length(diff);
+        minDist=min(minDist,dist);
     }
+    
     return minDist;
 }
 
 float voronoi(float2 uv, float s)
 {
-    return 0.;
+    float2 i=floor(uv*s);
+    float2 f=frac(uv*s);
+
+    float minDist = 1.;
+    float2 minP;
+
+    for(int y=-1;y<=1;y++)
+    for(int x=-1;x<=1;x++)
+    {
+        float2 neighbor=float2(float(x), float(y));
+        float2 p=1.-.5*f2rand2HalfOne(i+neighbor);
+        float2 diff=neighbor+p-f;
+        float dist=length(diff);
+        if(dist<minDist)
+        {
+            minDist=dist;
+            minP=p;
+        }
+    }
+    
+    return (minP.x*minP.y);
 }
 
 #endif
