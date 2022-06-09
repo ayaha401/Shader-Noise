@@ -27,6 +27,17 @@ float2 f2rand2HalfOne(float2 uv)
     return frac(sin(uv)*43758.5453123);
 }
 
+//===================================//
+// p =  1        : manhattanDistance //
+// p =  2        : euclideanDistance //
+// p =  infinity : chebyshevDistance //
+//===================================//
+float minkowskiDistance(float p1, float p2, float p)
+{
+    float2 d1=pow(abs(float2(p1,p2)),(float2)p);
+    return pow((d1.x+d1.y),1./p);
+}
+
 float randomNoise(float2 uv)
 {
     return rand(uv);
@@ -74,49 +85,60 @@ float perlinNoise(float2 uv,float s)
                      dot(v11, f-float2(1.,1.)), u.x), u.y)*.5+.5;
 }
 
-float cellularNoise(float2 uv, float s)
+//======================================//
+// p = 1        : MachineCellularNoise  //
+// p = 2        : CellularNoise         //
+// p = infinity : MachineCellularNoise  //
+//======================================//
+float cellularNoise(float2 uv, float s, float distanceType)
 {
     float2 i=floor(uv*s);
     float2 f=frac(uv*s);
 
-    float minDist = 1.;
+    float minDist = 8.;
 
     for(int y=-1;y<=1;y++)
     for(int x=-1;x<=1;x++)
     {
         float2 neighbor=float2(float(x), float(y));
-        float2 p=1.-.5*f2rand2HalfOne(i+neighbor);
+        float2 p=f2rand2HalfOne(i+neighbor);
         float2 diff=neighbor+p-f;
-        float dist=length(diff);
+        float dist=minkowskiDistance(diff.x,diff.y,distanceType);
         minDist=min(minDist,dist);
     }
     
     return minDist;
 }
 
-float voronoi(float2 uv, float s)
+//======================================//
+// p = 1        : MachineCellularNoise  //
+// p = 2        : CellularNoise         //
+// p = infinity : MachineCellularNoise  //
+//======================================//
+float voronoi(float2 uv, float s, float distanceType)
 {
     float2 i=floor(uv*s);
     float2 f=frac(uv*s);
 
-    float minDist = 1.;
+    float minDist = 8.;
     float2 minP;
 
     for(int y=-1;y<=1;y++)
     for(int x=-1;x<=1;x++)
     {
-        float2 neighbor=float2(float(x), float(y));
-        float2 p=1.-.5*f2rand2HalfOne(i+neighbor);
+        float2 neighbor=float2((float)x, (float)y);
+        float2 p=f2rand2HalfOne(i+neighbor);
         float2 diff=neighbor+p-f;
-        float dist=length(diff);
+        float dist=minkowskiDistance(diff.x,diff.y, distanceType);
+        
         if(dist<minDist)
         {
             minDist=dist;
             minP=p;
         }
     }
-    
-    return (minP.x*minP.y);
+
+    return (minP.x+minP.y)*.5;
 }
 
 #endif
