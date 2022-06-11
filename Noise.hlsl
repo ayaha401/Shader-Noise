@@ -85,11 +85,11 @@ float perlinNoise(float2 uv,float s)
                      dot(v11, f-float2(1.,1.)), u.x), u.y)*.5+.5;
 }
 
-//======================================//
-// p = 1        : MachineCellularNoise  //
-// p = 2        : CellularNoise         //
-// p = infinity : MachineCellularNoise  //
-//======================================//
+//=================================================//
+// distanceType = 1        : MachineCellularNoise  //
+// distanceType = 2        : CellularNoise         //
+// distanceType = infinity : MachineCellularNoise  //
+//=================================================//
 float cellularNoise(float2 uv, float s, float distanceType)
 {
     float2 i=floor(uv*s);
@@ -110,11 +110,11 @@ float cellularNoise(float2 uv, float s, float distanceType)
     return minDist;
 }
 
-//======================================//
-// p = 1        : MachineCellularNoise  //
-// p = 2        : CellularNoise         //
-// p = infinity : MachineCellularNoise  //
-//======================================//
+//=================================================//
+// distanceType = 1        : MachineCellularNoise  //
+// distanceType = 2        : CellularNoise         //
+// distanceType = infinity : MachineCellularNoise  //
+//=================================================//
 float voronoi(float2 uv, float s, float distanceType)
 {
     float2 i=floor(uv*s);
@@ -137,7 +137,6 @@ float voronoi(float2 uv, float s, float distanceType)
             minP=p;
         }
     }
-
     return (minP.x+minP.y)*.5;
 }
 
