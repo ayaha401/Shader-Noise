@@ -90,7 +90,7 @@ float perlinNoise(float2 uv,float s)
 // distanceType = 2        : CellularNoise         //
 // distanceType = infinity : MachineCellularNoise  //
 //=================================================//
-float cellularNoise(float2 uv, float s, float distanceType)
+float cellularNoise(float2 uv, float s, float distanceType, float moveSpeed = 0.)
 {
     float2 i=floor(uv*s);
     float2 f=frac(uv*s);
@@ -102,6 +102,7 @@ float cellularNoise(float2 uv, float s, float distanceType)
     {
         float2 neighbor=float2(float(x), float(y));
         float2 p=f2rand2HalfOne(i+neighbor);
+        p=.5+.5*sin(moveSpeed*_Time.y+6.2831*p);
         float2 diff=neighbor+p-f;
         float dist=minkowskiDistance(diff.x,diff.y,distanceType);
         minDist=min(minDist,dist);
@@ -115,7 +116,7 @@ float cellularNoise(float2 uv, float s, float distanceType)
 // distanceType = 2        : CellularNoise         //
 // distanceType = infinity : MachineCellularNoise  //
 //=================================================//
-float voronoi(float2 uv, float s, float distanceType)
+float voronoi(float2 uv, float s, float distanceType, float moveSpeed = 0.)
 {
     float2 i=floor(uv*s);
     float2 f=frac(uv*s);
@@ -128,6 +129,7 @@ float voronoi(float2 uv, float s, float distanceType)
     {
         float2 neighbor=float2((float)x, (float)y);
         float2 p=f2rand2HalfOne(i+neighbor);
+        p=.5+.5*sin(moveSpeed*_Time.y+6.2831*p);
         float2 diff=neighbor+p-f;
         float dist=minkowskiDistance(diff.x,diff.y, distanceType);
         
