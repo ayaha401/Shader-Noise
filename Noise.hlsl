@@ -38,7 +38,7 @@ float minkowskiDistance(float p1, float p2, float p)
     return pow((d1.x+d1.y),1./p);
 }
 
-float blockNoise(float2 uv, float s)
+float blockNoise(float2 uv, float s = 1.0)
 {
     uv=floor(uv*s);
     return rand(uv);
