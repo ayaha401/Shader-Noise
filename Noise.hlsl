@@ -27,17 +27,6 @@ float2 f2rand2HalfOne(float2 uv)
     return frac(sin(uv)*43758.5453123);
 }
 
-//===================================//
-// p =  1        : manhattanDistance //
-// p =  2        : euclideanDistance //
-// p =  infinity : chebyshevDistance //
-//===================================//
-float minkowskiDistance(float p1, float p2, float p)
-{
-    float2 d1=pow(abs(float2(p1,p2)),(float2)p);
-    return pow((d1.x+d1.y),1./p);
-}
-
 float blockNoise(float2 uv, float s = 1.0)
 {
     uv=floor(uv*s);
@@ -99,8 +88,12 @@ float cellularNoise(float2 uv, float s, float distanceType, float moveSpeed = 0.
         float2 p=f2rand2HalfOne(i+neighbor);
         p=.5+.5*sin(moveSpeed*_Time.y+6.2831*p);
         float2 diff=neighbor+p-f;
-        float dist=minkowskiDistance(diff.x,diff.y,distanceType);
-        minDist=min(minDist,dist);
+
+        // Calc minkowskiDistance
+        float2 d1 = pow(abs(float2(diff.x, diff.y)),(float2)distanceType);
+        float minkowskiDistance = pow((d1.x + d1.y), 1.0 / distanceType);
+
+        minDist=min(minDist,minkowskiDistance);
     }
     
     return minDist;
@@ -126,11 +119,14 @@ float voronoi(float2 uv, float s, float distanceType, float moveSpeed = 0.)
         float2 p=f2rand2HalfOne(i+neighbor);
         p=.5+.5*sin(moveSpeed*_Time.y+6.2831*p);
         float2 diff=neighbor+p-f;
-        float dist=minkowskiDistance(diff.x,diff.y, distanceType);
+
+        // Calc minkowskiDistance
+        float2 d1 = pow(abs(float2(diff.x, diff.y)),(float2)distanceType);
+        float minkowskiDistance = pow((d1.x + d1.y), 1.0 / distanceType);
         
-        if(dist<minDist)
+        if(minkowskiDistance < minDist)
         {
-            minDist=dist;
+            minDist = minkowskiDistance;
             minP=p;
         }
     }
