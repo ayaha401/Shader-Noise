@@ -133,4 +133,11 @@ float voronoi(float2 uv, float s, float distanceType, float moveSpeed = 0.)
     return (minP.x+minP.y)*.5;
 }
 
+// https://www.iryoku.com/next-generation-post-processing-in-call-of-duty-advanced-warfare/
+float interleavedGradientNoise(float2 value)
+{
+    float f = 0.06711056 * value.x + 0.00583715 * value.y;
+    return frac(52.9829189 * frac(f));
+}
+
 #endif
