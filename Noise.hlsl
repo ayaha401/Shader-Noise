@@ -92,6 +92,58 @@ float perlinNoise(float2 uv,float s)
                      dot(v11, f-float2(1.,1.)), u.x), u.y)*.5+.5;
 }
 
+// PerlinNoiseのFBMにabs(ノイズは-1~1にする)することで鋭い線のようなノイズが作れる
+// pos:座標
+// size:ノイズのサイズ
+// octaves:繰り返す回数
+// persistence:各オクターブの振幅減衰率 半減させると自然
+float turbulencePerlinNoiseFbm(float2 pos, float size, int octaves, float persistence = 0.5)
+{
+    float total = 0.0;
+    float frequency = 1.0;
+    float amplitude = 1.0;
+    float maxValue = 0.0; // 正規化用
+
+    for (int i = 0; i < octaves; i++)
+    {
+        total += abs(perlinNoise(pos, size * frequency) * 2.0 - 1.0) * amplitude;
+        maxValue += amplitude;
+        amplitude *= persistence;
+        frequency *= 2.0;
+    }
+
+    return total / maxValue;
+}
+
+// PerlinNoiseのFBMとOffsetを組み合わせることでturbulencePerlinNoiseFbmとは逆の模様を作ることができる
+// pos:座標
+// size:ノイズのサイズ
+// octaves:繰り返す回数
+// offset(0~1ぐらいを入れる)
+// persistence:各オクターブの振幅減衰率 半減させると自然
+float ridgePerlinNoiseFbm(float2 pos, float size, int octaves, float offset, float persistence = 0.5)
+{
+    float total = 0.0;
+    float frequency = 1.0;
+    float amplitude = 1.0;
+    float maxValue = 0.0; // 正規化用
+
+    for (int i = 0; i < octaves; i++)
+    {
+        float ridge = abs(perlinNoise(pos, size * frequency) * 2.0 - 1.0); // absして折り返す
+        ridge = offset - ridge; // 折り目が上になるように反転する 
+        ridge = ridge * ridge; // シャープにする
+
+        // FBM作るための処理を行う
+        total += ridge * amplitude;
+        maxValue += amplitude;
+        amplitude *= persistence;
+        frequency *= 2.0;
+    }
+
+    return total / maxValue;
+}
+
 //=================================================//
 // distanceType = 1        : MachineCellularNoise  //
 // distanceType = 2        : CellularNoise         //
