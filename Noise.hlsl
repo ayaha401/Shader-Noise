@@ -53,9 +53,10 @@ float valueNoise(float2 uv, float s)
 
 // valueNoiseを使用したFBM
 // pos:座標
+// size:ノイズのサイズ
 // octaves:繰り返す回数
 // persistence:各オクターブの振幅減衰率 半減させると自然
-float valueNoiseFbm(float2 pos, int octaves, float persistence = 0.5)
+float valueNoiseFbm(float2 pos, float size, int octaves, float persistence = 0.5)
 {
     float total = 0.0;
     float frequency = 1.0;
@@ -64,7 +65,7 @@ float valueNoiseFbm(float2 pos, int octaves, float persistence = 0.5)
 
     for (int i = 0; i < octaves; i++)
     {
-        total += valueNoise(pos * frequency, 10.) * amplitude;
+        total += valueNoise(pos * frequency, size) * amplitude;
         maxValue += amplitude;
         amplitude *= persistence;
         frequency *= 2.0;
