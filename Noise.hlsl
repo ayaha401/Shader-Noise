@@ -51,6 +51,28 @@ float valueNoise(float2 uv, float s)
     return lerp(v0010, v0111, u.y)*.5+.5;
 }
 
+// valueNoiseを使用したFBM
+// pos:座標
+// octaves:繰り返す回数
+// persistence:各オクターブの振幅減衰率 半減させると自然
+float valueNoiseFbm(float2 pos, int octaves, float persistence = 0.5)
+{
+    float total = 0.0;
+    float frequency = 1.0;
+    float amplitude = 1.0;
+    float maxValue = 0.0; // 正規化用
+
+    for (int i = 0; i < octaves; i++)
+    {
+        total += valueNoise(pos * frequency, 10.) * amplitude;
+        maxValue += amplitude;
+        amplitude *= persistence;
+        frequency *= 2.0;
+    }
+
+    return total / maxValue;
+}
+
 float perlinNoise(float2 uv,float s)
 {
     float2 i=floor(uv*s);
